@@ -1,0 +1,194 @@
+-- Создание таблицы Access
+CREATE TABLE Access (
+    Id INT IDENTITY PRIMARY KEY,
+    AccessKey NVARCHAR(MAX) NULL
+);
+
+-- Создание таблицы Clients
+CREATE TABLE Clients (
+    Id INT IDENTITY PRIMARY KEY,
+    Name NVARCHAR(100) NOT NULL,
+    Phone NVARCHAR(15) NOT NULL,
+    Email NVARCHAR(100) NULL,
+    CreatedDate DATETIME NULL
+);
+
+-- Создание таблицы Logs
+CREATE TABLE Logs (
+    Id INT IDENTITY PRIMARY KEY,
+    UserName VARCHAR(50) NOT NULL,
+    Action NVARCHAR(255) NOT NULL,
+    Date DATETIME NULL,
+    Description NVARCHAR(MAX) NULL
+);
+
+-- Создание таблицы OrderParts
+CREATE TABLE OrderParts (
+    Id INT IDENTITY PRIMARY KEY,
+    PartId INT NOT NULL,
+    Quantity INT NOT NULL,
+    OrderDate DATETIME NULL,
+    Status NVARCHAR(50) NULL,
+    TotalCost DECIMAL(18,2) NULL
+);
+
+-- Создание таблицы Parts
+CREATE TABLE Parts (
+    Id INT IDENTITY PRIMARY KEY,
+    PartName NVARCHAR(255) NOT NULL,
+    Quantity INT NULL,
+    Price DECIMAL(10,2) NULL,
+    LastUpdateDate DATE NULL,
+    Description NVARCHAR(MAX) NULL,
+    Manufacturer NVARCHAR(255) NULL,
+    ImagePath NVARCHAR(255) NULL,
+    SupportedModels NVARCHAR(255) NULL,
+    CellNumber NVARCHAR(255) NULL
+);
+
+-- Создание таблицы Payments
+CREATE TABLE Payments (
+    Id INT IDENTITY PRIMARY KEY,
+    RequestId INT NOT NULL,
+    Amount DECIMAL(10,2) NULL,
+    PaymentDate DATETIME NULL,
+    PaymentMethod NVARCHAR(50) NULL
+);
+
+-- Создание таблицы RepairLogs
+CREATE TABLE RepairLogs (
+    Id INT IDENTITY PRIMARY KEY,
+    RequestId INT NOT NULL,
+    UserId INT NOT NULL,
+    WorkDescription NVARCHAR(500) NULL,
+    WorkDate DATETIME NULL,
+    PartId INT NOT NULL,
+    AddedCost DECIMAL(18,2) NULL
+);
+
+-- Создание таблицы Requests
+CREATE TABLE Requests (
+    Id INT IDENTITY PRIMARY KEY,
+    ClientId INT NOT NULL,
+    CurrentMasterId INT NOT NULL,
+    Status NVARCHAR(50) NOT NULL,
+    TotalCost DECIMAL(10,2) NULL,
+    IsCompleted BIT NULL,
+    CreatedDate DATETIME NULL,
+    CompletedDate DATETIME NULL,
+    Description NVARCHAR(MAX) NULL
+);
+
+-- Создание таблицы Users
+CREATE TABLE Users (
+    Id INT IDENTITY PRIMARY KEY,
+    Username NVARCHAR(50) NOT NULL,
+    PasswordHash NVARCHAR(255) NOT NULL,
+    Role NVARCHAR(20) NOT NULL,
+    Phone NVARCHAR(15) NOT NULL,
+    Email NVARCHAR(100) NULL,
+    CreatedDate DATETIME NULL
+);
+
+CREATE TABLE SessionTable (
+    Id INT IDENTITY(1,1) PRIMARY KEY, -- Уникальный идентификатор сессии
+    UserName VARCHAR(50) NOT NULL
+);
+
+
+-------------------------------------------
+
+SET LANGUAGE Russian;
+INSERT INTO Clients (Name, Phone, Email, CreatedDate)
+VALUES
+('Иван Иванов', '+79991234567', 'ivanov@mail.ru', '2023-12-22T00:00:00'),
+('Петр Петров', '+79991234578', 'petrov@mail.ru', '2023-12-20T00:00:00'),
+('Сергей Сергеев', '+79993456789', 'sergeev@mail.ru', '2023-12-19T00:00:00'),
+('Мария Иванова', '+79994567891', 'maria@mail.ru', '2023-12-18T00:00:00'),
+('Ольга Смирнова', '+79995678901', 'olga@mail.ru', '2023-12-17T00:00:00'),
+('Алексей Кузнецов', '+79996789123', 'alex@mail.ru', '2023-12-16T00:00:00'),
+('Елена Морозова', '+79997890123', 'elena@mail.ru', '2023-12-15T00:00:00'),
+('Анна Попова', '+79998901234', 'anna@mail.ru', '2023-12-14T00:00:00'),
+('Виктор Соколов', '+79999012345', 'victor@mail.ru', '2023-12-13T00:00:00'),
+('Татьяна Федорова', '+79990123456', 'tanya@mail.ru', '2023-12-12T00:00:00');
+
+INSERT INTO Parts (PartName, Quantity, Price, LastUpdateDate, Description, Manufacturer, ImagePath, SupportedModels, CellNumber)
+VALUES
+('Дисплей iPhone14', 10, 3000.50, '2023-12-22T00:00:00', 'Оригинальный дисплей для iPhone15', 'Apple', 'Images/Parts/default.png', 'iPhone 15', 'A1'),
+('Батарея Samsung', 5, 2000.00, '2023-12-20T00:00:00', 'Зарядная батарея для Samsung', 'Samsung', 'Images/Parts/default.png', 'Galaxy S20, S21', 'B1'),
+('Шлейф камеры', 50, 500.00, '2023-12-19T00:00:00', 'Шлейф камеры для Iphone', 'Apple', 'Images/Parts/default.png', 'Iphone 13, Iphone 14', 'C1'),
+('Камера задняя', 3, 4000.00, '2023-12-18T00:00:00', 'Камера задняя для Xiaomi', 'Xiaomi', 'Images/Parts/default.png', 'Xiaomi Mi 10, Mi 11', 'D1'),
+('Материнская плата', 2, 10000.00, '2023-12-17T00:00:00', 'Материнская плата для Huawei', 'Huawei', 'Images/Parts/default.png', 'Huawei P30, P40', 'E1'),
+('Кнопка включения', 15, 250.00, '2023-12-16T00:00:00', 'Запасная кнопка включения', 'Sony', 'Images/Parts/default.png', 'Sony Xperia', 'F1'),
+('Экран LG', 7, 5000.00, '2023-12-15T00:00:00', 'Экран для LG', 'LG', 'Images/Parts/default.png', 'LG OLED', 'G1'),
+('Динамик', 20, 1500.00, '2023-12-14T00:00:00', 'Динамик для ноутбуков', 'Lenovo', 'Images/Parts/default.png', 'Lenovo', 'H1'),
+('Крышка корпуса', 12, 1200.00, '2023-12-13T00:00:00', 'Крышка корпуса для Asus', 'Asus', 'Images/Parts/default.png', 'Asus ROG', 'I1'),
+('Задняя панель', 8, 3500.00, '2023-12-12T00:00:00', 'Задняя панель Iphone13', 'Apple', 'Images/Parts/default.png', 'Dell', 'J1');
+
+INSERT INTO Users (Username, PasswordHash, Role, Phone, Email, CreatedDate)
+VALUES
+('Vika', '9d4e1e23bd5b727046a9e3b4b7db57bd8d6ee684', 'admin', '+79991234567', 'admin1@mail.ru', '2023-12-22T00:00:00'),
+('Egor', 'd1b71c4cf154f8ac7d8e0a4d24e1705e75f7b78c', 'master', '+79993456789', 'master1@mail.ru', '2023-12-21T00:00:00'),
+('Denis', '6bb61e3b7bce0931da574d19d1d82c88c966f1db', 'manager', '+79995678901', 'manager1@mail.ru', '2023-12-20T00:00:00'),
+('Matvey', 'f7c3bc1d808e04732adf679965ccc34ca7ae3441', 'admin', '+79996789123', 'admin2@mail.ru', '2023-12-19T00:00:00'),
+('master', 'b84b570d17ed8b9e49e7e2a3c9c0e42c7e1c2ae5', 'master', '+79997890123', 'master2@mail.ru', '2023-12-18T00:00:00'),
+('manager', '9b74c9897bac770ffc029102a200c5de8a689c38', 'manager', '+79998901234', 'manager2@mail.ru', '2023-12-17T00:00:00'),
+('admin', 'f25a2fc72690b780b2a14e140ef6a9e0fbabfae5', 'admin', '+79999012345', 'admin3@mail.ru', '2023-12-16T00:00:00'),
+('Vlad', 'c1572d05424d0ecb2a0a8a38a7e1d8b3e6f9f798', 'master', '+79990123456', 'master3@mail.ru', '2023-12-15T00:00:00'),
+('Dmitry', 'b4b147bc522828731f1a016bfa72c073e58d8489', 'manager', '+79991234567', 'manager3@mail.ru', '2023-12-14T00:00:00'),
+('Elena', '72b32a1f754ba1c09b3695e0cb6cde7f8bca7c5e', 'admin', '+79991234578', 'admin4@mail.ru', '2023-12-13T00:00:00');
+
+INSERT INTO Requests (ClientId, CurrentMasterId, Status, TotalCost, IsCompleted, CreatedDate, CompletedDate, Description)
+VALUES
+(1, 1, 'В процессе', 15000.00, 0, '2023-12-22T00:00:00', NULL, 'Ремонт iPhone'),
+(2, 2, 'Завершено', 4000.00, 1, '2023-12-20T00:00:00', '2023-12-21T00:00:00', 'Замена батареи Samsung'),
+(3, 3, 'В процессе', 5000.00, 0, '2023-12-19T00:00:00', NULL, 'Ремонт шлейфа камеры'),
+(4, 4, 'Завершено', 4000.00, 1, '2023-12-18T00:00:00', '2023-12-19T00:00:00', 'Замена камеры Xiaomi'),
+(5, 5, 'В процессе', 30000.00, 0, '2023-12-17T00:00:00', NULL, 'Ремонт материнской платы'),
+(6, 6, 'Завершено', 1750.00, 1, '2023-12-16T00:00:00', '2023-12-17T00:00:00', 'Ремонт кнопки включения'),
+(7, 7, 'В процессе', 20000.00, 0, '2023-12-15T00:00:00', NULL, 'Ремонт экрана LG'),
+(8, 8, 'Завершено', 7500.00, 1, '2023-12-14T00:00:00', '2023-12-15T00:00:00', 'Ремонт динамика Lenovo'),
+(9, 9, 'В процессе', 3000.00, 0, '2023-12-13T00:00:00', NULL, 'Ремонт корпуса Asus'),
+(10, 10, 'Завершено', 10500.00, 1, '2023-12-12T00:00:00', '2023-12-13T00:00:00', 'Ремонт задней панели iPhone');
+
+INSERT INTO Payments (RequestId, Amount, PaymentDate, PaymentMethod)
+VALUES
+(1, 15000.00, '2023-12-22T00:00:00', 'Карта'),
+(2, 4000.00, '2023-12-20T00:00:00', 'Наличные'),
+(3, 5000.00, '2023-12-19T00:00:00', 'Карта'),
+(4, 4000.00, '2023-12-18T00:00:00', 'Онлайн'),
+(5, 30000.00, '2023-12-17T00:00:00', 'Карта'),
+(6, 1750.00, '2023-12-16T00:00:00', 'Наличные'),
+(7, 20000.00, '2023-12-15T00:00:00', 'Онлайн'),
+(8, 7500.00, '2023-12-14T00:00:00', 'Карта'),
+(9, 3000.00, '2023-12-13T00:00:00', 'Наличные'),
+(10, 10500.00, '2023-12-12T00:00:00', 'Онлайн');
+
+INSERT INTO OrderParts (PartId, Quantity, OrderDate, Status, TotalCost)
+VALUES
+(1, 5, '2023-12-22T00:00:00', 'Заказано', 15000.00),
+(2, 2, '2023-12-20T00:00:00', 'Доставлено', 4000.00),
+(3, 10, '2023-12-19T00:00:00', 'В процессе', 5000.00),
+(4, 1, '2023-12-18T00:00:00', 'Заказано', 4000.00),
+(5, 3, '2023-12-17T00:00:00', 'Доставлено', 30000.00),
+(6, 7, '2023-12-16T00:00:00', 'В процессе', 1750.00),
+(7, 4, '2023-12-15T00:00:00', 'Заказано', 20000.00),
+(8, 5, '2023-12-14T00:00:00', 'Доставлено', 7500.00),
+(9, 6, '2023-12-13T00:00:00', 'В процессе', 3000.00),
+(10, 1, '2023-12-12T00:00:00', 'Заказано', 10500.00);
+
+INSERT INTO RepairLogs (RequestId, UserId, WorkDescription, WorkDate, PartId, AddedCost)
+VALUES
+(1, 1, 'Замена дисплея iPhone', '2023-12-22T00:00:00', 1, 1500.00),
+(2, 2, 'Замена батареи Samsung', '2023-12-20T00:00:00', 2, 500.00),
+(3, 3, 'Ремонт шлейфа камеры', '2023-12-19T00:00:00', 3, 1000.00),
+(4, 4, 'Замена задней камеры Xiaomi', '2023-12-18T00:00:00', 4, 1500.00),
+(5, 5, 'Ремонт материнской платы Huawei', '2023-12-17T00:00:00', 5, 2000.00),
+(6, 6, 'Ремонт кнопки включения Sony', '2023-12-16T00:00:00', 6, 300.00),
+(7, 7, 'Ремонт экрана LG', '2023-12-15T00:00:00', 7, 1000.00),
+(8, 8, 'Замена динамика Lenovo', '2023-12-14T00:00:00', 8, 400.00),
+(9, 9, 'Ремонт крышки корпуса Asus', '2023-12-13T00:00:00', 9, 800.00),
+(10, 10, 'Замена задней панели iPhone', '2023-12-12T00:00:00', 10, 350.00);
+
+INSERT INTO SessionTable (UserName)
+VALUES ('AdminUser');

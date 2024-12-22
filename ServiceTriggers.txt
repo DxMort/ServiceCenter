@@ -1,0 +1,316 @@
+DROP TRIGGER IF EXISTS dbo.trg_Clients_Log;
+
+CREATE TRIGGER [dbo].[trg_Clients_Log]
+ON [dbo].[Clients]
+AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @CurrentUserName NVARCHAR(50);
+
+    -- Получаем имя текущего пользователя из таблицы SessionTable
+    SELECT TOP 1 @CurrentUserName = UserName FROM SessionTable;
+
+    -- Логирование INSERT
+    IF EXISTS (SELECT 1 FROM inserted) AND NOT EXISTS (SELECT 1 FROM deleted)
+    BEGIN
+        INSERT INTO Logs (UserName, Action, Date, Description)
+        SELECT 
+            @CurrentUserName AS UserName,
+            'INSERT' AS Action,
+            GETDATE() AS Date,
+            CONCAT('Добавлен клиент: ', Name) AS Description
+        FROM inserted;
+    END;
+
+    -- Логирование UPDATE
+    IF EXISTS (SELECT 1 FROM inserted) AND EXISTS (SELECT 1 FROM deleted)
+    BEGIN
+        INSERT INTO Logs (UserName, Action, Date, Description)
+        SELECT 
+            @CurrentUserName AS UserName,
+            'UPDATE' AS Action,
+            GETDATE() AS Date,
+            CONCAT('Обновлен клиент: ', i.Name) AS Description
+        FROM inserted i;
+    END;
+
+    -- Логирование DELETE
+    IF EXISTS (SELECT 1 FROM deleted) AND NOT EXISTS (SELECT 1 FROM inserted)
+    BEGIN
+        INSERT INTO Logs (UserName, Action, Date, Description)
+        SELECT 
+            @CurrentUserName AS UserName,
+            'DELETE' AS Action,
+            GETDATE() AS Date,
+            CONCAT('Удален клиент: ', d.Name) AS Description
+        FROM deleted d;
+    END;
+END;
+
+
+-------------------------
+
+DROP TRIGGER IF EXISTS dbo.trg_OrderParts_Log;
+
+CREATE TRIGGER [dbo].[trg_OrderParts_Log]
+ON [dbo].[OrderParts]
+AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @CurrentUserName NVARCHAR(50);
+
+    -- Получаем имя текущего пользователя из таблицы SessionTable
+    SELECT TOP 1 @CurrentUserName = UserName FROM dbo.SessionTable;
+
+    -- Логирование INSERT
+    IF EXISTS (SELECT 1 FROM inserted) AND NOT EXISTS (SELECT 1 FROM deleted)
+    BEGIN
+        INSERT INTO Logs (UserName, Action, Date, Description)
+        SELECT 
+            @CurrentUserName AS UserName,
+            'INSERT' AS Action,
+            GETDATE() AS Date,
+            CONCAT('Добавлен заказ на запчасть: ', PartId, ', количество: ', Quantity) AS Description
+        FROM inserted;
+    END;
+
+    -- Логирование UPDATE
+    IF EXISTS (SELECT 1 FROM inserted) AND EXISTS (SELECT 1 FROM deleted)
+    BEGIN
+        INSERT INTO Logs (UserName, Action, Date, Description)
+        SELECT 
+            @CurrentUserName AS UserName,
+            'UPDATE' AS Action,
+            GETDATE() AS Date,
+            CONCAT('Обновлен заказ на запчасть: ', i.PartId, ', новое количество: ', i.Quantity) AS Description
+        FROM inserted i;
+    END;
+
+    -- Логирование DELETE
+    IF EXISTS (SELECT 1 FROM deleted) AND NOT EXISTS (SELECT 1 FROM inserted)
+    BEGIN
+        INSERT INTO Logs (UserName, Action, Date, Description)
+        SELECT 
+            @CurrentUserName AS UserName,
+            'DELETE' AS Action,
+            GETDATE() AS Date,
+            CONCAT('Удален заказ на запчасть: ', d.PartId, ', количество: ', d.Quantity) AS Description
+        FROM deleted d;
+    END;
+END;
+
+----------------
+
+DROP TRIGGER IF EXISTS dbo.trg_Parts_Log;
+
+CREATE TRIGGER [dbo].[trg_Parts_Log]
+ON [dbo].[Parts]
+AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @CurrentUserName NVARCHAR(50);
+
+    -- Получаем имя текущего пользователя из таблицы SessionTable
+    SELECT TOP 1 @CurrentUserName = UserName FROM dbo.SessionTable;
+
+    -- Логирование INSERT
+    IF EXISTS (SELECT 1 FROM inserted) AND NOT EXISTS (SELECT 1 FROM deleted)
+    BEGIN
+        INSERT INTO Logs (UserName, Action, Date, Description)
+        SELECT 
+            @CurrentUserName AS UserName,
+            'INSERT' AS Action,
+            GETDATE() AS Date,
+            CONCAT('Добавлена деталь: ', PartName, ', количество: ', Quantity) AS Description
+        FROM inserted;
+    END;
+
+    -- Логирование UPDATE
+    IF EXISTS (SELECT 1 FROM inserted) AND EXISTS (SELECT 1 FROM deleted)
+    BEGIN
+        INSERT INTO Logs (UserName, Action, Date, Description)
+        SELECT 
+            @CurrentUserName AS UserName,
+            'UPDATE' AS Action,
+            GETDATE() AS Date,
+            CONCAT('Обновлена деталь: ', i.PartName, ', новое количество: ', i.Quantity) AS Description
+        FROM inserted i;
+    END;
+
+    -- Логирование DELETE
+    IF EXISTS (SELECT 1 FROM deleted) AND NOT EXISTS (SELECT 1 FROM inserted)
+    BEGIN
+        INSERT INTO Logs (UserName, Action, Date, Description)
+        SELECT 
+            @CurrentUserName AS UserName,
+            'DELETE' AS Action,
+            GETDATE() AS Date,
+            CONCAT('Удалена деталь: ', d.PartName, ', количество: ', d.Quantity) AS Description
+        FROM deleted d;
+    END;
+END;
+
+---------------------------------
+
+DROP TRIGGER IF EXISTS dbo.trg_Payments_Log;
+
+CREATE TRIGGER [dbo].[trg_Payments_Log]
+ON [dbo].[Payments]
+AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @CurrentUserName NVARCHAR(50);
+
+    -- Получаем имя текущего пользователя из таблицы SessionTable
+    SELECT TOP 1 @CurrentUserName = UserName FROM dbo.SessionTable;
+
+    -- Логирование INSERT
+    IF EXISTS (SELECT 1 FROM inserted) AND NOT EXISTS (SELECT 1 FROM deleted)
+    BEGIN
+        INSERT INTO Logs (UserName, Action, Date, Description)
+        SELECT 
+            @CurrentUserName AS UserName,
+            'INSERT' AS Action,
+            GETDATE() AS Date,
+            CONCAT('Добавлен платёж на сумму: ', Amount, ', метод оплаты: ', PaymentMethod) AS Description
+        FROM inserted;
+    END;
+
+    -- Логирование UPDATE
+    IF EXISTS (SELECT 1 FROM inserted) AND EXISTS (SELECT 1 FROM deleted)
+    BEGIN
+        INSERT INTO Logs (UserName, Action, Date, Description)
+        SELECT 
+            @CurrentUserName AS UserName,
+            'UPDATE' AS Action,
+            GETDATE() AS Date,
+            CONCAT('Изменён платёж на сумму: ', i.Amount, ', новый метод оплаты: ', i.PaymentMethod) AS Description
+        FROM inserted i;
+    END;
+
+    -- Логирование DELETE
+    IF EXISTS (SELECT 1 FROM deleted) AND NOT EXISTS (SELECT 1 FROM inserted)
+    BEGIN
+        INSERT INTO Logs (UserName, Action, Date, Description)
+        SELECT 
+            @CurrentUserName AS UserName,
+            'DELETE' AS Action,
+            GETDATE() AS Date,
+            CONCAT('Удалён платёж на сумму: ', d.Amount, ', метод оплаты: ', d.PaymentMethod) AS Description
+        FROM deleted d;
+    END;
+END;
+
+-------------------------------
+
+DROP TRIGGER IF EXISTS dbo.trg_RepairLogs_Log;
+
+CREATE TRIGGER [dbo].[trg_RepairLogs_Log]
+ON [dbo].[RepairLogs]
+AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @CurrentUserName NVARCHAR(50);
+
+    -- Получаем имя текущего пользователя из таблицы SessionTable
+    SELECT TOP 1 @CurrentUserName = UserName FROM dbo.SessionTable;
+
+    -- Логирование INSERT
+    IF EXISTS (SELECT 1 FROM inserted) AND NOT EXISTS (SELECT 1 FROM deleted)
+    BEGIN
+        INSERT INTO Logs (UserName, Action, Date, Description)
+        SELECT 
+            @CurrentUserName AS UserName,
+            'INSERT' AS Action,
+            GETDATE() AS Date,
+            CONCAT('Добавлен лог ремонта с описанием: ', WorkDescription, ', добавлена стоимость: ', AddedCost) AS Description
+        FROM inserted;
+    END;
+
+    -- Логирование UPDATE
+    IF EXISTS (SELECT 1 FROM inserted) AND EXISTS (SELECT 1 FROM deleted)
+    BEGIN
+        INSERT INTO Logs (UserName, Action, Date, Description)
+        SELECT 
+            @CurrentUserName AS UserName,
+            'UPDATE' AS Action,
+            GETDATE() AS Date,
+            CONCAT('Обновлен лог ремонта с описанием: ', i.WorkDescription, ', добавленная стоимость: ', i.AddedCost) AS Description
+        FROM inserted i;
+    END;
+
+    -- Логирование DELETE
+    IF EXISTS (SELECT 1 FROM deleted) AND NOT EXISTS (SELECT 1 FROM inserted)
+    BEGIN
+        INSERT INTO Logs (UserName, Action, Date, Description)
+        SELECT 
+            @CurrentUserName AS UserName,
+            'DELETE' AS Action,
+            GETDATE() AS Date,
+            CONCAT('Удален лог ремонта с описанием: ', d.WorkDescription, ', добавленная стоимость: ', d.AddedCost) AS Description
+        FROM deleted d;
+    END;
+END;
+
+----------------------------------
+
+DROP TRIGGER IF EXISTS dbo.trg_Requests_Log;
+
+CREATE TRIGGER [dbo].[trg_Requests_Log]
+ON [dbo].[Requests]
+AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @CurrentUserName NVARCHAR(50);
+
+    -- Получаем имя текущего пользователя из таблицы SessionTable
+    SELECT TOP 1 @CurrentUserName = UserName FROM dbo.SessionTable;
+
+    -- Логирование INSERT
+    IF EXISTS (SELECT 1 FROM inserted) AND NOT EXISTS (SELECT 1 FROM deleted)
+    BEGIN
+        INSERT INTO Logs (UserName, Action, Date, Description)
+        SELECT 
+            @CurrentUserName AS UserName,
+            'INSERT' AS Action,
+            GETDATE() AS Date,
+            CONCAT('Добавлен запрос с ID клиента: ', ClientId, ', статус: ', Status, ', общая стоимость: ', TotalCost) AS Description
+        FROM inserted;
+    END;
+
+    -- Логирование UPDATE
+    IF EXISTS (SELECT 1 FROM inserted) AND EXISTS (SELECT 1 FROM deleted)
+    BEGIN
+        INSERT INTO Logs (UserName, Action, Date, Description)
+        SELECT 
+            @CurrentUserName AS UserName,
+            'UPDATE' AS Action,
+            GETDATE() AS Date,
+            CONCAT('Обновлен запрос с ID клиента: ', i.ClientId, ', новый статус: ', i.Status, ', новая общая стоимость: ', i.TotalCost) AS Description
+        FROM inserted i;
+    END;
+
+    -- Логирование DELETE
+    IF EXISTS (SELECT 1 FROM deleted) AND NOT EXISTS (SELECT 1 FROM inserted)
+    BEGIN
+        INSERT INTO Logs (UserName, Action, Date, Description)
+        SELECT 
+            @CurrentUserName AS UserName,
+            'DELETE' AS Action,
+            GETDATE() AS Date,
+            CONCAT('Удален запрос с ID клиента: ', d.ClientId, ', статус: ', d.Status, ', общая стоимость: ', d.TotalCost) AS Description
+        FROM deleted d;
+    END;
+END;
